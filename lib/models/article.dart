@@ -24,6 +24,7 @@ class Article {
       publishedDate: article["published_date"],
       byLine: article["byline"],
       title: article["title"],
-      );
+    );
   }
+
 }
