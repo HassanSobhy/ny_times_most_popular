@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import '../models/article.dart';
+import '../screens/article_detail_screen.dart';
 import '../service/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,11 +40,11 @@ class _HomeScreenState extends State<HomeScreen> {
             if (snapShot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else {
-              //print(snapShot.data.results[index]);
+               List<Article> data = snapShot.data.results;
               return ListView.builder(
-                  itemCount: 10,
+                  itemCount: data.length,
                   itemBuilder: (context, index) {
-                    return buildListItem(snapShot.data.results[index]);
+                    return buildListItem(data[index]);
                   });
             }
           },
@@ -51,16 +53,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  ListTile buildListItem(article) {
+  ListTile buildListItem(Article article) {
     return ListTile(
       onTap: () {
         //Navigate to Details Screen.
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(article)));
       },
       leading: CircleAvatar(
         backgroundColor: Colors.grey,
       ),
       title: Text(
-        "${article['title']}",
+        "${article.title}",
         style: TextStyle(
             fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
       ),
@@ -72,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "${article['byline']}",
+              "${article.byLine}",
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey,
@@ -84,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
-                "${article['source']}",
+                "${article.source}",
                 style: TextStyle(fontSize: 15, color: Colors.grey),
               ),
               Expanded(
@@ -99,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 4,
                   ),
                   Text(
-                    "${article['published_date']}",
+                    "${article.publishedDate}",
                     style: TextStyle(fontSize: 15, color: Colors.grey),
                   )
                 ],
