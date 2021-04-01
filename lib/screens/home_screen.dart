@@ -1,27 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import '../models/article.dart';
 import '../screens/article_detail_screen.dart';
 import '../service/api_service.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  ApiService apiService;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    apiService = ApiService();
-    apiService.getArticles();
-  }
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final apiService = Provider.of<ApiService>(context);
+    apiService.fetchData();
     return Scaffold(
       appBar: AppBar(
         title: Text("NY Times Most Popular"),
@@ -34,26 +21,19 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       drawer: Drawer(),
       body: Center(
-        child: FutureBuilder(
-          future: apiService.getArticles(),
-          builder: (context, snapShot) {
-            if (snapShot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else {
-               List<Article> data = snapShot.data.results;
-              return ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    return buildListItem(data[index]);
-                  });
-            }
-          },
-        ),
-      ),
-    );
+          child: apiService.isFetching
+              ? CircularProgressIndicator()
+              : apiService.getArticles() != null
+              ? ListView.builder(
+            itemCount: apiService.getArticles().results.length,
+            itemBuilder: (context,index) => buildListItem(context,apiService.getArticles().results[index]),
+          )
+              : Text("Error"))
+      ,);
+
   }
 
-  ListTile buildListItem(Article article) {
+  ListTile buildListItem(BuildContext context,Article article) {
     return ListTile(
       onTap: () {
         //Navigate to Details Screen.
@@ -114,7 +94,5 @@ class _HomeScreenState extends State<HomeScreen> {
       trailing: Icon(Icons.arrow_forward_ios),
     );
   }
-
 }
-
 

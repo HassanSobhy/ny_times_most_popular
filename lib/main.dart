@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'service/api_service.dart';
 import 'screens/article_detail_screen.dart';
@@ -16,7 +17,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      home: ChangeNotifierProvider<ApiService>(
+        create: (_) => ApiService(),
+        child: HomeScreen(),
+      ),
     );
   }
 }
