@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ny_times_app/providers/article_provider.dart';
 import 'package:provider/provider.dart';
 import '../models/article.dart';
 import '../screens/article_detail_screen.dart';
@@ -7,8 +8,6 @@ import '../service/api_service.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final apiService = Provider.of<ApiService>(context);
-    apiService.fetchData();
     return Scaffold(
       appBar: AppBar(
         title: Text("NY Times Most Popular"),
@@ -21,23 +20,32 @@ class HomeScreen extends StatelessWidget {
       ),
       drawer: Drawer(),
       body: Center(
-          child: apiService.isFetching
-              ? CircularProgressIndicator()
-              : apiService.getArticles() != null
-              ? ListView.builder(
-            itemCount: apiService.getArticles().results.length,
-            itemBuilder: (context,index) => buildListItem(context,apiService.getArticles().results[index]),
-          )
-              : Text("Error"))
-      ,);
-
+        child: Consumer<ArticleProvider>(
+          builder: (context, value, child) {
+            if (value.data == null) {
+              value.getArticles();
+              return CircularProgressIndicator();
+            } else {
+              return ListView.builder(
+                  itemCount: value.data.results.length,
+                  itemBuilder: (context, index) {
+                    return buildListItem(context, value.data.results[index]);
+                  });
+            }
+          },
+        ),
+      ),
+    );
   }
 
-  ListTile buildListItem(BuildContext context,Article article) {
+  ListTile buildListItem(BuildContext context, Article article) {
     return ListTile(
       onTap: () {
         //Navigate to Details Screen.
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetailScreen(article)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ArticleDetailScreen(article)));
       },
       leading: CircleAvatar(
         backgroundColor: Colors.grey,
@@ -51,7 +59,9 @@ class HomeScreen extends StatelessWidget {
       subtitle: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(height: 8,),
+          SizedBox(
+            height: 8,
+          ),
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -95,4 +105,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ny_times_app/providers/article_provider.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'service/api_service.dart';
@@ -17,8 +18,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChangeNotifierProvider<ApiService>(
-        create: (_) => ApiService(),
+      home: ChangeNotifierProvider<ArticleProvider>(
+        create: (_) => ArticleProvider(),
         child: HomeScreen(),
       ),
     );
